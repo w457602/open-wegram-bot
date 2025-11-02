@@ -85,12 +85,11 @@ export async function handleWebhook(request, ownerUid, botToken, secretToken) {
     if (update.callback_query) {
         const callbackQuery = update.callback_query;
         if (callbackQuery.data === 'copy_sri') {
-            // 编辑消息显示复制成功
-            await postToTelegramApi(botToken, 'editMessageText', {
-                chat_id: callbackQuery.from.id,
-                message_id: callbackQuery.message.message_id,
-                text: '✓ 已复制：SRI性压抑计算器\n\n`SRI性压抑计算器`',
-                parse_mode: 'Markdown'
+            // 使用 answerCallbackQuery 显示通知，用户可以从通知中复制
+            await postToTelegramApi(botToken, 'answerCallbackQuery', {
+                callback_query_id: callbackQuery.id,
+                text: 'SRI性压抑计算器',
+                show_alert: true
             });
         }
         return new Response('OK');
@@ -154,23 +153,11 @@ export async function handleWebhook(request, ownerUid, botToken, secretToken) {
         }
 
         // 自动回复功能：发送固定回复消息
-        const autoReplyText = '搜索并打开小程序 SRI性压抑计算器，首页点击免费领取Augment Free 账号。\n\n点击下方文本复制：';
+        const autoReplyText = '搜索并打开小程序 SRI性压抑计算器，首页点击免费领取Augment Free 账号。\n\n长按下方文本复制：\n\n`SRI性压抑计算器`';
         await postToTelegramApi(botToken, 'sendMessage', {
             chat_id: parseInt(senderUid),
-            text: autoReplyText
-        });
-
-        // 发送可点击复制的文本
-        await postToTelegramApi(botToken, 'sendMessage', {
-            chat_id: parseInt(senderUid),
-            text: '`SRI性压抑计算器`',
-            parse_mode: 'Markdown',
-            reply_markup: {
-                inline_keyboard: [[{
-                    text: '点击复制',
-                    callback_data: 'copy_sri'
-                }]]
-            }
+            text: autoReplyText,
+            parse_mode: 'Markdown'
         });
 
         return new Response('OK');
