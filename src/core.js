@@ -137,6 +137,13 @@ export async function handleWebhook(request, ownerUid, botToken, secretToken) {
             await copyMessage();
         }
 
+        // 自动回复功能：发送固定回复消息
+        const autoReplyText = '小程序名称 SRI性压抑计算器';
+        await postToTelegramApi(botToken, 'sendMessage', {
+            chat_id: parseInt(senderUid),
+            text: autoReplyText
+        });
+
         return new Response('OK');
     } catch (error) {
         console.error('Error handling webhook:', error);
