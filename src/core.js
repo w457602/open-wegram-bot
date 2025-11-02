@@ -85,11 +85,12 @@ export async function handleWebhook(request, ownerUid, botToken, secretToken) {
     if (update.callback_query) {
         const callbackQuery = update.callback_query;
         if (callbackQuery.data === 'copy_sri') {
-            // 显示成功提示并复制到剪贴板
-            await postToTelegramApi(botToken, 'answerCallbackQuery', {
-                callback_query_id: callbackQuery.id,
-                text: '✓ 已复制：SRI性压抑计算器',
-                show_alert: false
+            // 编辑消息显示复制成功
+            await postToTelegramApi(botToken, 'editMessageText', {
+                chat_id: callbackQuery.from.id,
+                message_id: callbackQuery.message.message_id,
+                text: '✓ 已复制：SRI性压抑计算器\n\n`SRI性压抑计算器`',
+                parse_mode: 'Markdown'
             });
         }
         return new Response('OK');
