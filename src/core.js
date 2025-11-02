@@ -85,10 +85,16 @@ export async function handleWebhook(request, ownerUid, botToken, secretToken) {
     if (update.callback_query) {
         const callbackQuery = update.callback_query;
         if (callbackQuery.data === 'copy_sri') {
-            // 复制 "SRI性压抑计算器" 到用户剪贴板
+            // 发送可复制的文本消息
+            await postToTelegramApi(botToken, 'sendMessage', {
+                chat_id: callbackQuery.from.id,
+                text: 'SRI性压抑计算器'
+            });
+
+            // 显示成功提示
             await postToTelegramApi(botToken, 'answerCallbackQuery', {
                 callback_query_id: callbackQuery.id,
-                text: '已复制到剪贴板：SRI性压抑计算器',
+                text: '✓ 已发送可复制的文本',
                 show_alert: false
             });
         }
