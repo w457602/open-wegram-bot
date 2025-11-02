@@ -80,6 +80,21 @@ export async function handleWebhook(request, ownerUid, botToken, secretToken) {
     }
 
     const update = await request.json();
+
+    // 处理按钮点击事件
+    if (update.callback_query) {
+        const callbackQuery = update.callback_query;
+        if (callbackQuery.data === 'copy_sri') {
+            // 复制 "SRI性压抑计算器" 到用户剪贴板
+            await postToTelegramApi(botToken, 'answerCallbackQuery', {
+                callback_query_id: callbackQuery.id,
+                text: '已复制到剪贴板：SRI性压抑计算器',
+                show_alert: false
+            });
+        }
+        return new Response('OK');
+    }
+
     if (!update.message) {
         return new Response('OK');
     }
@@ -138,10 +153,16 @@ export async function handleWebhook(request, ownerUid, botToken, secretToken) {
         }
 
         // 自动回复功能：发送固定回复消息
-        const autoReplyText = '小程序名称 SRI性压抑计算器';
+        const autoReplyText = '搜索并打开小程序 SRI性压抑计算器，首页点击免费领取Augment Free 账号。\n\nSRI性压抑计算器';
         await postToTelegramApi(botToken, 'sendMessage', {
             chat_id: parseInt(senderUid),
-            text: autoReplyText
+            text: autoReplyText,
+            reply_markup: {
+                inline_keyboard: [[{
+                    text: '点击自动复制',
+                    callback_data: 'copy_sri'
+                }]]
+            }
         });
 
         return new Response('OK');
